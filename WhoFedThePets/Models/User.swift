@@ -7,20 +7,22 @@
 
 import Foundation
 
-enum UserType: String {
-    case admin
-    case standard
-    case guest
-}
-
-class User: Identifiable {
+@Observable class User: Identifiable {
+    var id: UUID = UUID()
     var name: String
-    var type: UserType
     var lastFeed: Date
+    var createdHouseholds: [UUID]
+    var invitedHouseholds: [UUID]
+    var createdOn: Date
     
-    init(name: String, type: UserType, lastFeed: Date) {
+    init(name: String, lastFeed: Date) {
         self.name = name
-        self.type = type
         self.lastFeed = lastFeed
+        self.createdHouseholds = []
+        self.invitedHouseholds = []
+        self.createdOn = Date.now
     }
+    
+    // TODO: func for loggin feed
+    
 }

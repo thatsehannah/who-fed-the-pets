@@ -26,12 +26,14 @@ enum Gender: String {
 }
 
 @Observable class Pet: Identifiable {
+    var id: UUID = UUID()
     var name: String
     var type: PetType
     var age: Int
     var color: String
     var gender: Gender
     var lastFed: Date
+    var createdOn: Date
     
     init(name: String, type: PetType, age: Int, color: String, gender: Gender, lastFed: Date) {
         self.name = name
@@ -40,6 +42,7 @@ enum Gender: String {
         self.color = color
         self.gender = gender
         self.lastFed = lastFed
+        self.createdOn = Date.now
     }
 }
 
