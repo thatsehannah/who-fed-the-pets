@@ -18,10 +18,10 @@ struct FeedingSchedule: Identifiable {
     var date: Date
     var createdOn: Date
     
-    init(pets: [Pet], intervals: [Interval], date: Date) {
+    init(pets: [Pet], intervals: [Interval]) {
         self.pets = pets
         self.intervals = intervals
-        self.date = date
+        self.date = Date.now
         self.createdOn = Date.now
     }
     

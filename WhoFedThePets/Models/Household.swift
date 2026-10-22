@@ -7,12 +7,12 @@
 
 import Foundation
 
-enum HouseholdError {
+enum HouseholdError: Error {
     case notAuthorized
 }
 
 @Observable class Household: Identifiable {
-    var id: UUID = UUID()
+    var id: UUID
     var pets: [Pet]
     var creator: User
     var members: [HouseholdMember]
@@ -22,6 +22,7 @@ enum HouseholdError {
     var createdOn: Date
     
     init(creator: User) {
+        self.id = UUID()
         self.pets = []
         self.creator = creator
         self.members = []
@@ -34,20 +35,28 @@ enum HouseholdError {
         members.append(firstMember)
     }
     
+    func getCurrentRole(of user: User) -> MemberType? {
+        members.first(where: {$0.userId == user.id})?.role
+    }
+    
     // TODO: func for adding members
-    func addMember(_ user: User, by: User) throws {
-        let newHouseholdMember = HouseholdMember(userId: user.id, householdId: self.id, role: .standard)
-        self.members.append(newHouseholdMember)
+    func addMember(_ newHouseholdMember: HouseholdMember, by actor: User) throws {
+        guard getCurrentRole(of: actor) == .admin else { throw HouseholdError.notAuthorized }
+        
+        var newHouseholdMemberCopy = newHouseholdMember
+        newHouseholdMemberCopy.addedBy = actor.id
+        
+        members.append(newHouseholdMember)
     }
     
     // TODO: func for adding pets
-    func addPet(_ pet: Pet) {
-        self.pets.append(pet)
+    func addPet(_ newPet: Pet, by actor: User) {
+        pets.append(newPet)
     }
     
     // TODO: func for adding feeding schedule
-    func addFeedingSchedule(_ schedule: FeedingSchedule) {
-        self.feedingSchedules.append(schedule)
+    func addFeedingSchedule(_ newFeedingSchedule: FeedingSchedule, by actor: User) {
+        feedingSchedules.append(newFeedingSchedule)
     }
     
 }
