@@ -5,5 +5,6 @@ import SwiftUI
         WindowGroup {
             ContentView()
         }
+        .environment(\.householdRepository, MockHouseholdRepository(currentUser: MockUsers.user1))
     }
 }

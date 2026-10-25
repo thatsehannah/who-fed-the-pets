@@ -9,13 +9,16 @@ import Foundation
 
 enum HouseholdError: Error {
     case notAuthorized
+    case notInvited
 }
 
 @Observable class Household: Identifiable {
     var id: UUID
+    var name: String
     var pets: [Pet]
     var creator: User
-    var members: [HouseholdMember]
+    var pendingMembers: [HouseholdMember]
+    var activeMembers: [HouseholdMember]
     var feedingSchedules: [FeedingSchedule]
     var currentFeedSchedules: [FeedingSchedule]
     var previousFeedingSchedules: [FeedingSchedule]
@@ -23,39 +26,51 @@ enum HouseholdError: Error {
     
     init(creator: User) {
         self.id = UUID()
+        self.name = "\(creator.lastName) Household"
         self.pets = []
         self.creator = creator
-        self.members = []
+        self.pendingMembers = []
+        self.activeMembers = []
         self.feedingSchedules = []
         self.currentFeedSchedules = []
         self.previousFeedingSchedules = []
         self.createdOn = Date.now
         
-        var firstMember = HouseholdMember(userId: creator.id, householdId: self.id, role: .admin)
-        members.append(firstMember)
+        let firstMember = HouseholdMember(userId: creator.id, role: .admin, householdId: self.id)
+        activeMembers.append(firstMember)
     }
     
-    func getCurrentRole(of user: User) -> MemberType? {
-        members.first(where: {$0.userId == user.id})?.role
+    private func getCurrentRole(of user: User) -> MemberType? {
+        activeMembers.first(where: {$0.userId == user.id})?.role
     }
     
-    // TODO: func for adding members
-    func addMember(_ newHouseholdMember: HouseholdMember, by actor: User) throws {
+    func requestToAddNewMemberToHousehold(_ user: User, role: MemberType, by actor: User) throws {
+        // this is where a text message will be sent
         guard getCurrentRole(of: actor) == .admin else { throw HouseholdError.notAuthorized }
         
-        var newHouseholdMemberCopy = newHouseholdMember
-        newHouseholdMemberCopy.addedBy = actor.id
-        
-        members.append(newHouseholdMember)
+        let requestedMember = HouseholdMember(userId: user.id, role: role, householdId: self.id, addedBy: actor.id)
+        pendingMembers.append(requestedMember)
     }
     
-    // TODO: func for adding pets
-    func addPet(_ newPet: Pet, by actor: User) {
+    func addMember(_ newHouseholdMember: HouseholdMember) throws {
+        guard newHouseholdMember.householdId != nil else { throw HouseholdError.notInvited }
+        
+        activeMembers.append(newHouseholdMember)
+    }
+    
+    func addPet(_ newPet: Pet, by actor: User) throws {
+        guard getCurrentRole(of: actor) == .admin else { throw HouseholdError.notAuthorized }
+        
+        let newPet = newPet
+        newPet.addedBy = actor.id
+        newPet.householdId = self.id
+        
         pets.append(newPet)
     }
     
-    // TODO: func for adding feeding schedule
-    func addFeedingSchedule(_ newFeedingSchedule: FeedingSchedule, by actor: User) {
+    func addFeedingSchedule(_ newFeedingSchedule: FeedingSchedule, by actor: User) throws {
+        guard getCurrentRole(of: actor) == .admin else { throw HouseholdError.notAuthorized }
+        
         feedingSchedules.append(newFeedingSchedule)
     }
     

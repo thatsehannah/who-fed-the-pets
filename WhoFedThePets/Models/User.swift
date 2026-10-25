@@ -9,7 +9,8 @@ import Foundation
 
 @Observable class User: Identifiable {
     var id: UUID
-    var name: String
+    var firstName: String
+    var lastName: String
     var email: String
     var username: String
     var phoneNumber: String
@@ -17,11 +18,13 @@ import Foundation
     var lastFeed: Date?
     var createdHouseholds: [UUID]
     var invitedHouseholds: [UUID]
+    var acceptedHouseholds: [UUID]
     var createdOn: Date
     
-    init(name: String, email: String, username: String, phoneNumber: String) {
+    init(firstName: String, lastName: String, email: String, username: String, phoneNumber: String) {
         self.id = UUID()
-        self.name = name
+        self.firstName = firstName
+        self.lastName = lastName
         self.email = email
         self.username = username
         self.phoneNumber = phoneNumber
@@ -29,11 +32,13 @@ import Foundation
         self.lastFeed = nil
         self.createdHouseholds = []
         self.invitedHouseholds = []
+        self.acceptedHouseholds = []
         self.createdOn = Date.now
     }
     
-    func changeName(to newName: String) {
-        self.name = newName
+    func changeName(newFirstName: String, newLastName: String) {
+        self.firstName = newFirstName
+        self.lastName = newLastName
     }
     
     func changeEmail(to newEmail: String) {

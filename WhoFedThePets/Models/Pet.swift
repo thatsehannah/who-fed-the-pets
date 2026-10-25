@@ -33,10 +33,11 @@ enum Gender: String {
     var color: String
     var gender: Gender
     var lastFed: Date?
-    var householdId: UUID
+    var addedBy: UUID?
+    var householdId: UUID?
     var createdOn: Date
     
-    init(name: String, type: PetType, age: Int, color: String, gender: Gender, householdId: UUID) {
+    init(name: String, type: PetType, age: Int, color: String, gender: Gender) {
         self.id = UUID()
         self.name = name
         self.type = type
@@ -44,7 +45,6 @@ enum Gender: String {
         self.color = color
         self.gender = gender
         self.lastFed = nil
-        self.householdId = householdId
         self.createdOn = Date.now
     }
 }
